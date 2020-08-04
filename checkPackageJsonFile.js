@@ -1,9 +1,8 @@
 const fs = require("fs");
 const fp = require("lodash/fp");
 const core = require("@actions/core");
-const github = require("@actions/github");
 
-const checkPackageJsonFile = async () => {
+const checkPackageJsonFile = async (github) => {
   try {
     const packageJson = JSON.parse(fs.readFileSync("package.json"));
 
@@ -11,7 +10,7 @@ const checkPackageJsonFile = async () => {
 
     checkVersionRegex(packageJson);
 
-    await checkVersionIsNew(packageJson);
+    await checkVersionIsNew(packageJson, github);
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error("File Not Found: package.json");
@@ -48,7 +47,7 @@ const checkVersionRegex = (packageJson) => {
   );
 };
 
-const checkVersionIsNew = async (packageJson) => {
+const checkVersionIsNew = async (packageJson, github) => {
   const token = core.getInput('GITHUB_TOKEN');
 
   const octokit = github.getOctokit(token);
