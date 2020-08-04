@@ -1,5 +1,9 @@
 name: 'Polarity Integration Development Checklist'
 description: 'Checks a list of requirements for each Polarity Integration Development'
+inputs:
+  GITHUB_TOKEN:
+    description: 'Github token'
+    required: true
 runs:
   using: 'node12'
   main: 'index.js'

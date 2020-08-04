@@ -3,16 +3,22 @@ const checkConfigFile = require("./checkConfigFile");
 const checkPackageJsonFile = require("./checkPackageJsonFile");
 const checkLicenseFile = require("./checkLicenseFile");
 
-try {
-  console.log("Starting Integration Development Checklist...\n");
+const main = async () => {
+  try {
+    console.log('Starting Integration Development Checklist...\n');
 
-  checkConfigFile();
+    checkConfigFile();
 
-  checkLicenseFile();
+    checkLicenseFile();
 
-  await checkPackageJsonFile();
+    await checkPackageJsonFile();
 
-  console.log("Integration Development Checklist Passed!");
-} catch (error) {
-  core.setFailed(error.message);
-}
+    console.log('\n\nIntegration Development Checklist Passed!\n');
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+};
+
+main();
+
+module.exports = main;

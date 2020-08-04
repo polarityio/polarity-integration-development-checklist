@@ -1,23 +1,20 @@
-# Hello world JavaScript action
+# Polarity Integration Development Checklist action
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log. To learn how this action was built, see "[Creating a JavaScript action](https://help.github.com/en/articles/creating-a-javascript-action)" in the GitHub Help documentation.
+Checks a list of requirements found in the [Polarity Integration Development Checklist](https://polarity.atlassian.net/wiki/spaces/PROD/pages/126255145/Integration+Development+Checklist)
 
 ## Inputs
 
-### `who-to-greet`
+### `GITHUB_TOKEN`
 
-**Required** The name of the person to greet. Default `"World"`.
+**Required** Your secrets github token `${{ secrets.GITHUB_TOKEN }}`.
 
-## Outputs
 
-### `time`
-
-The time we greeted you.
-
-## Example usage
+## Example Step
 
 ```yaml
-uses: actions/hello-world-javascript-action@main
-with:
-  who-to-greet: 'Mona the Octocat'
+- name: Polarity Integration Development Checklist
+  id: int-dev-checklist
+  uses: actions/polarity-integration-development-checklist@main
+  with:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
