@@ -1,8 +1,9 @@
+const fs = require("fs");
 const fp = require("lodash/fp");
 
 const checkConfigFile = () => {
   try {
-    const configJs = require("./config/config.js");
+    const configJs = eval(fs.readFileSync("config/config.js", "utf8"));
 
     checkLoggingLevel(configJs);
 
@@ -36,9 +37,11 @@ const checkRequestOptions = (configJs) => {
     ["cert", "key", "passphrase", "ca", "proxy"].forEach(
       checkEmptyRequestProperty(request)
     );
-    checkRejectUnauthorized(request)
-    
-    console.log("- Success: Config Request Options Defaults set correctly in config.js");
+    checkRejectUnauthorized(request);
+
+    console.log(
+      "- Success: Config Request Options Defaults set correctly in config.js"
+    );
   }
 };
 
@@ -87,9 +90,10 @@ const checkIntegrationOptionsDescriptions = fp.flow(
     }
   }),
   fp.thru(() =>
-    console.log("- Success: Config Integration Options all have descriptions in config.js")
+    console.log(
+      "- Success: Config Integration Options all have descriptions in config.js"
+    )
   )
 );
-
 
 module.exports = checkConfigFile;
