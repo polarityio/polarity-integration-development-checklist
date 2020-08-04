@@ -28,7 +28,7 @@ Checks a list of requirements found in the Polarity Integration Development Chec
 ```yaml
 - name: Polarity Integration Development Checklist
   id: int-dev-checklist
-  uses: actions/polarity-integration-development-checklist@v1.0.0
+  uses: polarityio/polarity-integration-development-checklist@v1.0.0
   with:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
