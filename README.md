@@ -1,6 +1,20 @@
 # Polarity Integration Development Checklist action
 
-Checks a list of requirements found in the [Polarity Integration Development Checklist](https://polarity.atlassian.net/wiki/spaces/PROD/pages/126255145/Integration+Development+Checklist)
+Checks a list of requirements found in the [Polarity Integration Development Checklist](https://polarity.atlassian.net/wiki/spaces/PROD/pages/126255145/Integration+Development+Checklist).  This currently includes:
+- LICENSE File Checks 
+  - Verifying the LICENSE file exists
+  - Verifying contents of the LICENSE are correct and up to date
+- Config.js File Checks 
+  - Verifying Logging Level is set to `info`
+  - Verifying Request Options are set correctly including
+    - `cert`, `key`, `passphrase`, `ca`, and `proxy` all having the value `''`
+    - `rejectUnauthorized` being set to `true`
+  - Verifying all Integration Options have a description containing content
+- Config.js File Checks 
+  - Verifying the `private` flag is set to true
+  - Verifying the `version` property matches standard semantic versioning format
+  - Checks to see if the current `version` property already exists as a release on Github.
+  
 
 ## Inputs
 
@@ -14,7 +28,7 @@ Checks a list of requirements found in the [Polarity Integration Development Che
 ```yaml
 - name: Polarity Integration Development Checklist
   id: int-dev-checklist
-  uses: actions/polarity-integration-development-checklist@main
+  uses: actions/polarity-integration-development-checklist@v1
   with:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
