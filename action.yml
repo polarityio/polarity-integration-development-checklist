@@ -4,6 +4,9 @@ inputs:
   GITHUB_TOKEN:
     description: 'Github token'
     required: true
+branding:
+  icon: 'triangle'  
+  color: 'green'
 runs:
   using: 'node12'
   main: 'index.js'
