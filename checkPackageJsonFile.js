@@ -1,5 +1,6 @@
 const fs = require("fs");
 const fp = require("lodash/fp");
+const core = require("@actions/core");
 const github = require("@actions/github");
 
 const checkPackageJsonFile = async () => {
@@ -48,19 +49,27 @@ const checkVersionRegex = (packageJson) => {
 };
 
 const checkVersionIsNew = async (packageJson) => {
-  const myToken = core.getInput("myToken");
+  const token = core.getInput('GITHUB_TOKEN');
 
-  const octokit = github.getOctokit(myToken);
+  const octokit = github.getOctokit(token);
 
-  const context = github.context;
-  const releaseTags = await octokit.repos.listTags({
-    owner: context.repository_owner,
-    repo: context.repository,
-  });
+  const repo = fp.get('context.payload.repository', github);
 
+  const releaseTags = fp.getOr(
+    [],
+    'data',
+    await octokit.repos.listTags({
+      owner: repo.owner.login,
+      repo: repo.name
+    })
+  );
+  
   const version = fp.getOr("failed_to_get", "version", packageJson);
-  if (fp.any((releaseTag) => releaseTag.name === version, releaseTags)) {
-    throw new Error("Version in package.json already has a release on Github");
+  const matchingReleaseTag = fp.find((releaseTag) => releaseTag.name === version, releaseTags)
+  if (matchingReleaseTag) {
+    throw new Error(
+      `Version in package.json already has a release on Github (${matchingReleaseTag.name})`
+    );
   }
 
   console.log("- Success: Version in package.json is new and unique on Github");

@@ -53,6 +53,7 @@ const checkLicenseFile = () => {
       licenseFile !== CORRECT_LICENSE_VALUE1 &&
       licenseFile !== CORRECT_LICENSE_VALUE2
     ) {
+      console.error(`\nCorrect License File:\n${CORRECT_LICENSE_VALUE1}`);
       throw new Error("LICENSE File Value Incorrect");
     }
   } catch (e) {
