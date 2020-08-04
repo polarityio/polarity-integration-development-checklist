@@ -1,6 +1,6 @@
 # Polarity Integration Development Checklist action
 
-Checks a list of requirements found in the [Polarity Integration Development Checklist](https://polarity.atlassian.net/wiki/spaces/PROD/pages/126255145/Integration+Development+Checklist).  This currently includes:
+Checks a list of requirements found in the Polarity Integration Development Checklist.  This currently includes:
 - LICENSE File Checks 
   - Verifying the LICENSE file exists
   - Verifying contents of the LICENSE are correct and up to date
