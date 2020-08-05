@@ -26,6 +26,7 @@ Checks a list of requirements found in the Polarity Integration Development Chec
 ## Example Step
 
 ```yaml
+- uses: actions/checkout@v2
 - name: Polarity Integration Development Checklist
   id: int-dev-checklist
   uses: polarityio/polarity-integration-development-checklist@v1.0.0
