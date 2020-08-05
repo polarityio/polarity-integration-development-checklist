@@ -4,13 +4,13 @@ Checks a list of requirements found in the Polarity Integration Development Chec
 - LICENSE File Checks 
   - Verifying the LICENSE file exists
   - Verifying contents of the LICENSE are correct and up to date
-- Config.js File Checks 
+- config.js File Checks 
   - Verifying Logging Level is set to `info`
   - Verifying Request Options are set correctly including
     - `cert`, `key`, `passphrase`, `ca`, and `proxy` all having the value `''`
     - `rejectUnauthorized` being set to `true`
   - Verifying all Integration Options have a description containing content
-- Config.js File Checks 
+- package.json File Checks 
   - Verifying the `private` flag is set to true
   - Verifying the `version` property matches standard semantic versioning format
   - Checks to see if the current `version` property already exists as a release on Github.
