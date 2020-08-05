@@ -1,13 +1,12 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'Polarity Integration Development Checklist'
+description: 'Checks a list of requirements for each Polarity Integration Development'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  GITHUB_TOKEN:
+    description: 'Github token'
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we we greeted you'
+branding:
+  icon: 'triangle'  
+  color: 'green'
 runs:
   using: 'node12'
   main: 'index.js'
