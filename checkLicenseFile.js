@@ -48,12 +48,12 @@ const CORRECT_LICENSE_VALUE2 =
 
 const checkLicenseFile = () => {
   try {
-    const licenseFile = fs.readFileSync("LICENSE", "utf-8");
+    const licenseFile = fs.readFileSync("LICENSE", "utf-8").replace(/\s/g, "");
     if (
-      licenseFile !== CORRECT_LICENSE_VALUE1 &&
-      licenseFile !== CORRECT_LICENSE_VALUE2
+      licenseFile !== CORRECT_LICENSE_VALUE1.replace(/\s/g, "") &&
+      licenseFile !== CORRECT_LICENSE_VALUE2.replace(/\s/g, "")
     ) {
-      console.error(`\nCorrect License File:\n${CORRECT_LICENSE_VALUE1}`);
+      console.error(`\nCorrect License File:\n\n${CORRECT_LICENSE_VALUE1}`);
       throw new Error("LICENSE File Value Incorrect");
     }
   } catch (e) {
