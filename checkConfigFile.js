@@ -11,7 +11,7 @@ const checkConfigFile = () => {
 
     checkIntegrationOptionsDescriptions(configJs);
   } catch (e) {
-    if (e.message.includes("Cannot find module")) {
+    if (e.message.includes("no such file or directory")) {
       throw new Error("File Not Found: config.js");
     }
     throw e;

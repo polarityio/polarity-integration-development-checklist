@@ -3,7 +3,6 @@
 Checks a list of requirements found in the Polarity Integration Development Checklist.  This currently includes:
 - LICENSE File Checks 
   - Verifying the LICENSE file exists
-  - Verifying contents of the LICENSE are correct and up to date
 - config.js File Checks 
   - Verifying Logging Level is set to `info`
   - Verifying Request Options are set correctly including
@@ -26,6 +25,7 @@ Checks a list of requirements found in the Polarity Integration Development Chec
 ## Example Step
 
 ```yaml
+- uses: actions/checkout@v2
 - name: Polarity Integration Development Checklist
   id: int-dev-checklist
   uses: polarityio/polarity-integration-development-checklist@v1.0.0
