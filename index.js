@@ -3,6 +3,8 @@ const github = require("@actions/github");
 const checkConfigFile = require("./checkConfigFile");
 const checkPackageJsonFile = require("./checkPackageJsonFile");
 const checkLicenseFile = require("./checkLicenseFile");
+const checkReadmeFile = require("./checkReadmeFile");
+const checkPrettierRcFile = require("./checkPrettierRcFile");
 
 const main = async () => {
   try {
@@ -11,6 +13,10 @@ const main = async () => {
     checkConfigFile();
 
     checkLicenseFile();
+
+    checkReadmeFile();
+
+    checkPrettierRcFile();
 
     await checkPackageJsonFile(github);
 

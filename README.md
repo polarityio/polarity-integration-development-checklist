@@ -3,6 +3,10 @@
 Checks a list of requirements found in the Polarity Integration Development Checklist.  This currently includes:
 - LICENSE File Checks 
   - Verifying the LICENSE file exists
+- .prettierrc File Checks 
+  - Verifying the .prettierrc file exists
+- README.md File Checks 
+  - Verifying the README.md file exists
 - config.js File Checks 
   - Verifying Logging Level is set to `info`
   - Verifying Request Options are set correctly including
