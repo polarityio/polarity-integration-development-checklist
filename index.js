@@ -1,10 +1,12 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const checkConfigFile = require("./checkConfigFile");
-const checkPackageJsonFile = require("./checkPackageJsonFile");
 const checkLicenseFile = require("./checkLicenseFile");
 const checkReadmeFile = require("./checkReadmeFile");
 const checkPrettierRcFile = require("./checkPrettierRcFile");
+const checkGitignoreFile = require("./checkGitignoreFile");
+const checkPackageJsonFile = require("./checkPackageJsonFile");
+const checkPackageLockFile = require("./checkPackageLockFile");
 
 const main = async () => {
   try {
@@ -18,7 +20,11 @@ const main = async () => {
 
     checkPrettierRcFile();
 
+    checkGitignoreFile();
+
     await checkPackageJsonFile(github);
+    
+    checkPackageLockFile(github);
 
     console.log('\n\nIntegration Development Checklist Passed!\n');
   } catch (error) {

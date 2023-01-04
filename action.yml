@@ -1,12 +1,12 @@
-name: 'Polarity Integration Development Checklist'
-description: 'Checks a list of requirements for each Polarity Integration Development'
+name: "Polarity Integration Development Checklist"
+description: "Checks a list of requirements for each Polarity Integration Development"
 inputs:
   GITHUB_TOKEN:
-    description: 'Github token'
+    description: "Github token"
     required: true
 branding:
-  icon: 'triangle'  
-  color: 'green'
+  icon: "triangle"
+  color: "green"
 runs:
-  using: 'node12'
-  main: 'index.js'
+  using: "node16"
+  main: "index.js"
