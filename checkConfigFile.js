@@ -1,5 +1,5 @@
 const fs = require("fs");
-const fp = require("lodash/fp");
+const { getOr, flow, forEach, thru } = require("lodash/fp");
 
 const checkConfigFile = () => {
   try {
@@ -7,9 +7,13 @@ const checkConfigFile = () => {
 
     checkLoggingLevel(configJs);
 
+    checkDefaultColor(configJs);
+
     checkRequestOptions(configJs);
 
     checkIntegrationOptionsDescriptions(configJs);
+
+    checkConfigJsonExists();
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error("File Not Found: config.js");
@@ -19,7 +23,7 @@ const checkConfigFile = () => {
 };
 
 const checkLoggingLevel = (configJs) => {
-  const loggingLevel = fp.getOr("failed_to_get", "logging.level", configJs);
+  const loggingLevel = getOr("failed_to_get", "logging.level", configJs);
   if (loggingLevel === "failed_to_get") {
     throw new Error("Logging Level not defined in config.js");
   } else if (loggingLevel !== "info") {
@@ -29,15 +33,23 @@ const checkLoggingLevel = (configJs) => {
   }
 };
 
+const checkDefaultColor = (configJs) => {
+  const defaultColor = getOr("failed_to_get", "defaultColor", configJs);
+  if (defaultColor === "failed_to_get") {
+    throw new Error("Default Color not defined in config.js");
+  }
+
+  console.log("- Success: Config Logging Level set to 'info' in config.js");
+};
+
 const checkRequestOptions = (configJs) => {
-  const request = fp.getOr("failed_to_get", "request", configJs);
+  const request = getOr("failed_to_get", "request", configJs);
   if (request === "failed_to_get") {
     throw new Error("Request Options object not defined in config.js");
   } else {
     ["cert", "key", "passphrase", "ca", "proxy"].forEach(
       checkEmptyRequestProperty(request)
     );
-    checkRejectUnauthorized(request);
 
     console.log(
       "- Success: Config Request Options Defaults set correctly in config.js"
@@ -46,7 +58,7 @@ const checkRequestOptions = (configJs) => {
 };
 
 const checkEmptyRequestProperty = (request) => (propertyKey) => {
-  const result = fp.getOr("failed_to_get", propertyKey, request);
+  const result = getOr("failed_to_get", propertyKey, request);
   if (result === "failed_to_get") {
     throw new Error(
       `'${propertyKey}' property in Request Options object not defined in config.js`
@@ -58,30 +70,9 @@ const checkEmptyRequestProperty = (request) => (propertyKey) => {
   }
 };
 
-const checkRejectUnauthorized = (request) => {
-  const rejectUnauthorized = fp.getOr(
-    "failed_to_get",
-    "rejectUnauthorized",
-    request
-  );
-  if (rejectUnauthorized === "failed_to_get") {
-    throw new Error(
-      "'rejectUnauthorized' property in Request Options object not defined in config.js"
-    );
-  } else if (rejectUnauthorized === false) {
-    throw new Error(
-      "'rejectUnauthorized' property in Request Options object set to false in config.js"
-    );
-  } else if (rejectUnauthorized !== true) {
-    throw new Error(
-      "'rejectUnauthorized' property in Request Options object set to non-boolean value in config.js"
-    );
-  }
-};
-
-const checkIntegrationOptionsDescriptions = fp.flow(
-  fp.getOr([], "options"),
-  fp.forEach((option) => {
+const checkIntegrationOptionsDescriptions = flow(
+  getOr([], "options"),
+  forEach((option) => {
     const description = option.description;
     if (!description) {
       throw new Error(
@@ -89,11 +80,22 @@ const checkIntegrationOptionsDescriptions = fp.flow(
       );
     }
   }),
-  fp.thru(() =>
+  thru(() =>
     console.log(
       "- Success: Config Integration Options all have descriptions in config.js"
     )
   )
 );
+
+const checkConfigJsonExists = () => {
+  try {
+    fs.readFileSync("config/config.json", "utf8");
+  } catch (e) {
+    if (e.message.includes("no such file or directory")) {
+      throw new Error("File Not Found: config.json");
+    }
+    throw e;
+  }
+};
 
 module.exports = checkConfigFile;
