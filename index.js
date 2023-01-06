@@ -22,9 +22,7 @@ const main = async () => {
 
     checkGitignoreFile();
 
-    await checkPackageJsonFile(github);
-    
-    checkPackageLockFile();
+    await checkPackageJsonFile(github).then(checkPackageLockFile);
 
     console.info('\n\nIntegration Development Checklist Passed!\n');
   } catch (error) {
