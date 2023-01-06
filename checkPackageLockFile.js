@@ -19,7 +19,9 @@ const checkPackageLockFile = async () => {
 const checkVersionInSyncWithPackageJson = (packageLock) => {
   const packageJSON = JSON.parse(fs.readFileSync("package.json"));
   if (get("version", packageLock) !== get("version", packageJSON)) {
-    throw new Error("Version in package.json is NOT in sync with version in package-lock.json.\nRun `npm install` and push the updated package-lock.json.");
+    throw new Error(
+      "Version in package.json is NOT in sync with version in package-lock.json.\n     * Run `npm install` and push the updated package-lock.json to resolve"
+    );
   }
 };
 
