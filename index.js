@@ -23,7 +23,7 @@ const main = async () => {
     checkGitignoreFile();
 
     // NOTE: The await keyword isn't working. Must use .then syntax instead
-    checkPackageJsonFile(github).then(checkPackageLockFile);
+    await checkPackageJsonFile(github).then(checkPackageLockFile);
 
     console.info('\n\nIntegration Development Checklist Passed!\n');
   } catch (error) {
