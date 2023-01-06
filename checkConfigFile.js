@@ -18,7 +18,7 @@ const checkConfigFile = () => {
     if (e.message.includes("no such file or directory")) {
       throw new Error(
         "File Not Found: config.js\n\n" +
-          "* Add `./config/config.js` file to your integration to resolve"
+          "  * Add `./config/config.js` file to your integration to resolve"
       );
     }
     throw e;
@@ -30,12 +30,12 @@ const checkLoggingLevel = (configJs) => {
   if (loggingLevel === "failed_to_get") {
     throw new Error(
       "Logging Level not defined in config.js\n\n" +
-        "* Add `logging: { level: 'info' }` to your `./config/config.js` to resolve"
+        "  * Add `logging: { level: 'info' }` to your `./config/config.js` to resolve"
     );
   } else if (loggingLevel !== "info") {
     throw new Error(
       "Logging Level not set to 'info' in config.js\n\n" +
-        "* Set `logging.level` to `info` to your `./config/config.js` to resolve"
+        "  * Set `logging.level` to `info` to your `./config/config.js` to resolve"
     );
   } else {
     console.info("- Success: Config Logging Level set to 'info' in config.js");
@@ -47,7 +47,7 @@ const checkDefaultColor = (configJs) => {
   if (defaultColor === "failed_to_get") {
     throw new Error(
       "Default Color not defined in config.js\n\n" +
-        "* `defaultColor: 'light-blue'` to your `./config/config.js` to resolve"
+        "  * `defaultColor: 'light-blue'` to your `./config/config.js` to resolve"
     );
   }
 
