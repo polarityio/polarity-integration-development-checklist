@@ -10,7 +10,7 @@ const checkReadmeFile = () => {
     throw e;
   }
 
-  console.log("- Success: README.md file contents correct");
+  console.info("- Success: README.md file contents correct");
 };
 
 module.exports = checkReadmeFile;

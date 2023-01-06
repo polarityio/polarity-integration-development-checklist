@@ -10,7 +10,7 @@ const checkGitignoreFile = () => {
     throw e;
   }
 
-  console.log("- Success: .gitignore file contents correct");
+  console.info("- Success: .gitignore file contents correct");
 };
 
 module.exports = checkGitignoreFile;

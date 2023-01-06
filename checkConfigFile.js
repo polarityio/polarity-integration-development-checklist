@@ -29,7 +29,7 @@ const checkLoggingLevel = (configJs) => {
   } else if (loggingLevel !== "info") {
     throw new Error("Logging Level not set to 'info' in config.js");
   } else {
-    console.log("- Success: Config Logging Level set to 'info' in config.js");
+    console.info("- Success: Config Logging Level set to 'info' in config.js");
   }
 };
 
@@ -39,7 +39,7 @@ const checkDefaultColor = (configJs) => {
     throw new Error("Default Color not defined in config.js");
   }
 
-  console.log("- Success: Config Logging Level set to 'info' in config.js");
+  console.info("- Success: Config Logging Level set to 'info' in config.js");
 };
 
 const checkRequestOptions = (configJs) => {
@@ -51,7 +51,7 @@ const checkRequestOptions = (configJs) => {
       checkEmptyRequestProperty(request)
     );
 
-    console.log(
+    console.info(
       "- Success: Config Request Options Defaults set correctly in config.js"
     );
   }
@@ -81,7 +81,7 @@ const checkIntegrationOptionsDescriptions = flow(
     }
   }),
   thru(() =>
-    console.log(
+    console.info(
       "- Success: Config Integration Options all have descriptions in config.js"
     )
   )

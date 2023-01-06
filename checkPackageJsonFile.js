@@ -27,7 +27,7 @@ const checkPrivateFlag = (packageJson) => {
     throw new Error("Private Flag not set to true in package.json");
   }
 
-  console.log("- Success: Private Flag set to true in package.json");
+  console.info("- Success: Private Flag set to true in package.json");
 };
 
 const checkVersionRegex = (packageJson) => {
@@ -42,7 +42,7 @@ const checkVersionRegex = (packageJson) => {
     );
   }
 
-  console.log(
+  console.info(
     "- Success: Version property is correctly formatted in package.json"
   );
 };
@@ -71,7 +71,7 @@ const checkVersionIsNew = async (packageJson, github) => {
     );
   }
 
-  console.log("- Success: Version in package.json is new and unique on Github");
+  console.info("- Success: Version in package.json is new and unique on Github");
 };
 
 module.exports = checkPackageJsonFile;

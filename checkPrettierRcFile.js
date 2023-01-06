@@ -10,7 +10,7 @@ const checkPrettierRcFile = () => {
     throw e;
   }
 
-  console.log("- Success: .prettierrc file contents correct");
+  console.info("- Success: .prettierrc file contents correct");
 };
 
 module.exports = checkPrettierRcFile;

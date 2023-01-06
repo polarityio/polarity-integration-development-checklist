@@ -10,7 +10,7 @@ const checkLicenseFile = () => {
     throw e;
   }
 
-  console.log("- Success: LICENSE file contents correct");
+  console.info("- Success: LICENSE file contents correct");
 };
 
 module.exports = checkLicenseFile;

@@ -10,7 +10,7 @@ const checkPackageLockFile = require("./checkPackageLockFile");
 
 const main = async () => {
   try {
-    console.log('Starting Integration Development Checklist...\n');
+    console.info('Starting Integration Development Checklist...\n');
 
     checkConfigFile();
 
@@ -22,11 +22,11 @@ const main = async () => {
 
     checkGitignoreFile();
 
-    await checkPackageJsonFile(github);
-    
-    checkPackageLockFile(github);
+    checkPackageLockFile();
 
-    console.log('\n\nIntegration Development Checklist Passed!\n');
+    await checkPackageJsonFile(github);
+
+    console.info('\n\nIntegration Development Checklist Passed!\n');
   } catch (error) {
     core.setFailed(error.message);
   }
