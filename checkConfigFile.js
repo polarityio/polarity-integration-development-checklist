@@ -61,7 +61,7 @@ const checkDefaultColor = (configJs) => {
     );
   }
 
-  console.info("- Success: Config Logging Level set to 'info' in config.js");
+  console.info("- Success: 'defaultColor' is set in config.js");
 };
 
 const checkRequestOptions = (configJs) => {
@@ -128,6 +128,7 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
         `  * Add \`"polarityIntegrationUuid": "${uuidv1()}",\` to your \`./config/config.json\` to resolve`
     );
   }
+  
   const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
   const previousPolarityIntegrationUuid = get(
     "polarityIntegrationUuid",
@@ -139,7 +140,7 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
           branch: toMergeIntoBranch,
           relativePath: "config/config.json",
         })
-      )
+      ) || "{}"
     )
   );
 
@@ -152,8 +153,9 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
         `  * Update to \`"polarityIntegrationUuid": "${previousPolarityIntegrationUuid}",\` in your \`./config/config.json\` to resolve`
     );
   }
+
   console.info(
     "- Success: Config `polarityIntegrationUuid` is set and has not been changed in `config.json`"
-  )
+  );
 };
 module.exports = checkConfigFile;
