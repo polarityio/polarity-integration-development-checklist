@@ -7,12 +7,16 @@ const checkPrettierRcFile = require("./checkPrettierRcFile");
 const checkGitignoreFile = require("./checkGitignoreFile");
 const checkPackageJsonFile = require("./checkPackageJsonFile");
 const checkPackageLockFile = require("./checkPackageLockFile");
+const { get } = require("lodash/fp");
 
 const main = async () => {
   try {
     console.info("Starting Integration Development Checklist...\n");
+    const token = core.getInput('GITHUB_TOKEN');
+    const octokit = github.getOctokit(token);
+    const repo = get("context.payload.repository", github);
 
-    checkConfigFile();
+    await checkConfigFile(octokit, repo);
 
     checkLicenseFile();
 
@@ -22,7 +26,7 @@ const main = async () => {
 
     checkGitignoreFile();
 
-    await checkPackageJsonFile(github);
+    await checkPackageJsonFile(octokit, repo);
 
     checkPackageLockFile();
 

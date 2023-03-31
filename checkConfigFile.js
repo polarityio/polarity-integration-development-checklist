@@ -1,8 +1,9 @@
 const fs = require("fs");
 const { v1: uuidv1 } = require("uuid");
-const { getOr, flow, forEach, thru } = require("lodash/fp");
+const { getOr, flow, forEach, thru, get } = require("lodash/fp");
+const { getExistingFile } = require("./octokitHelpers");
 
-const checkConfigFile = () => {
+const checkConfigFile = async (octokit, repo) => {
   try {
     const configJs = eval(fs.readFileSync("config/config.js", "utf8"));
 
@@ -20,7 +21,7 @@ const checkConfigFile = () => {
       fs.readFileSync("config/config.json", "utf8")
     );
 
-    checkPolarityIntegrationUuid(configJson);
+    await checkPolarityIntegrationUuid(configJson, octokit, repo);
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error(
@@ -117,7 +118,7 @@ const checkConfigJsonExists = () => {
   }
 };
 
-const checkPolarityIntegrationUuid = (configJson) => {
+const checkPolarityIntegrationUuid = async (configJson, octokit, repo) => {
   const polarityIntegrationUuid = get("polarityIntegrationUuid", configJson);
   if (!polarityIntegrationUuid) {
     const newUuid = uuidv1();
@@ -127,5 +128,9 @@ const checkPolarityIntegrationUuid = (configJson) => {
         `  * Add \`polarityIntegrationUuid: '${newUuid}'\` to your \`./config/config.json\` to resolve`
     );
   }
+
+  const toMergeIntoBranch = context.payload.pull_request.base.ref
+  const previousCommits = await getExistingFile(octokit, 'polarityio', repo.name, toMergeIntoBranch, 'config/config.json')
+  console.info({toMergeIntoBranch,previousCommits})
 };
 module.exports = checkConfigFile;
