@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { v1: uuidv1 } = require("uuid");
 const { getOr, flow, forEach, thru } = require("lodash/fp");
 
 const checkConfigFile = () => {
@@ -14,6 +15,12 @@ const checkConfigFile = () => {
     checkIntegrationOptionsDescriptions(configJs);
 
     checkConfigJsonExists();
+
+    const configJson = JSON.parse(
+      fs.readFileSync("config/config.json", "utf8")
+    );
+
+    checkPolarityIntegrationUuid(configJson);
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error(
@@ -110,4 +117,15 @@ const checkConfigJsonExists = () => {
   }
 };
 
+const checkPolarityIntegrationUuid = (configJson) => {
+  const polarityIntegrationUuid = get("polarityIntegrationUuid", configJson);
+  if (!polarityIntegrationUuid) {
+    const newUuid = uuidv1();
+
+    throw new Error(
+      "Polarity Integration UUID not defined in config.json\n\n" +
+        `  * Add \`polarityIntegrationUuid: '${newUuid}'\` to your \`./config/config.json\` to resolve`
+    );
+  }
+};
 module.exports = checkConfigFile;
