@@ -129,13 +129,12 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
     );
   }
   const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
-  console.info(JSON.stringify({ toMergeIntoBranch, octokit, repo }, null, 2));
-  const previousCommits = await getExistingFile({
+  const previousConfigJson = parseFileContent(await getExistingFile({
     octokit,
     repoName: repo.name,
     branch: toMergeIntoBranch,
     relativePath: "config/config.json",
-  });
-  console.info(JSON.stringify({ previousCommits }, null, 2));
+  }));
+  console.info(JSON.stringify({ previousConfigJson }, null, 2));
 };
 module.exports = checkConfigFile;
