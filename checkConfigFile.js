@@ -129,9 +129,10 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
     );
   }
   const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
-  const previousConfigJson = flow(
+  const previousPolarityIntegrationUuid = flow(
     parseFileContent,
-    JSON.parse
+    JSON.parse,
+    get("polarityIntegrationUuid")
   )(
     await getExistingFile({
       octokit,
@@ -140,9 +141,11 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
       relativePath: "config/config.json",
     })
   );
-  
-  const previousPolarityIntegrationUuid = get('polarityIntegrationUuid', previousConfigJson)
-  if(previousPolarityIntegrationUuid !== polarityIntegrationUuid){
+
+  if (
+    previousPolarityIntegrationUuid &&
+    previousPolarityIntegrationUuid !== polarityIntegrationUuid
+  ) {
     throw new Error(
       `Polarity Integration UUID in config.json does not match the UUID in the base branch config.json\n\n` +
         `  * Update to \`"polarityIntegrationUuid": "${previousPolarityIntegrationUuid}",\` in your \`./config/config.json\` to resolve`
