@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
+const { get } = require("lodash/fp");
 const checkConfigFile = require("./checkConfigFile");
 const checkLicenseFile = require("./checkLicenseFile");
 const checkReadmeFile = require("./checkReadmeFile");
@@ -7,7 +8,6 @@ const checkPrettierRcFile = require("./checkPrettierRcFile");
 const checkGitignoreFile = require("./checkGitignoreFile");
 const checkPackageJsonFile = require("./checkPackageJsonFile");
 const checkPackageLockFile = require("./checkPackageLockFile");
-const { get } = require("lodash/fp");
 
 const main = async () => {
   try {
