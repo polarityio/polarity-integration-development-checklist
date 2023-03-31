@@ -129,7 +129,7 @@ const checkPolarityIntegrationUuid = async (configJson, octokit, repo) => {
     );
   }
   const token = core.getInput('GITHUB_TOKEN');
-  const octokit = github.getOctokit(token);
+  octokit = github.getOctokit(token);
   const repo = get("context.payload.repository", github);
   const toMergeIntoBranch = github.context.payload.pull_request.base.ref
   const previousCommits = await getExistingFile(octokit, 'polarityio', repo.name, toMergeIntoBranch, 'config/config.json')
