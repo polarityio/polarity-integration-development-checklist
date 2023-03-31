@@ -61,7 +61,7 @@ const checkDefaultColor = (configJs) => {
     );
   }
 
-  console.info("- Success: 'defaultColor' is set in config.js");
+  console.info("- Success: Config 'defaultColor' is set in config.js");
 };
 
 const checkRequestOptions = (configJs) => {
@@ -128,7 +128,7 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
         `  * Add \`"polarityIntegrationUuid": "${uuidv1()}",\` to your \`./config/config.json\` to resolve`
     );
   }
-  
+
   const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
   const previousPolarityIntegrationUuid = get(
     "polarityIntegrationUuid",
