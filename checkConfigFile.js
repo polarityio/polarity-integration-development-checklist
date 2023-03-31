@@ -143,6 +143,28 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
     )
   );
 
+  console.info(
+    JSON.stringify(
+      {
+        getExistingFile: await getExistingFile({
+          octokit,
+          repoName: repo.name,
+          branch: toMergeIntoBranch,
+          relativePath: "config/config.json",
+        }),
+        parseFileContent: parseFileContent(
+          await getExistingFile({
+            octokit,
+            repoName: repo.name,
+            branch: toMergeIntoBranch,
+            relativePath: "config/config.json",
+          })
+        ) || "{}"
+      },
+      null,
+      2
+    )
+  );
   if (
     previousPolarityIntegrationUuid &&
     previousPolarityIntegrationUuid !== polarityIntegrationUuid
@@ -154,6 +176,6 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
   }
   console.info(
     "- Success: Config `polarityIntegrationUuid` is set and has not been changed in `config.json`"
-  )
+  );
 };
 module.exports = checkConfigFile;
