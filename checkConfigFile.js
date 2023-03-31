@@ -139,7 +139,7 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
           branch: toMergeIntoBranch,
           relativePath: "config/config.json",
         })
-      )
+      ) || "{}"
     )
   );
 
