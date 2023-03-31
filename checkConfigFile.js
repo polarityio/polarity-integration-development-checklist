@@ -23,7 +23,7 @@ const checkConfigFile = async (octokit, repo) => {
       fs.readFileSync("config/config.json", "utf8")
     );
 
-    await checkPolarityIntegrationUuid(configJson, octokit, repo);
+    await checkPolarityIntegrationUuid(octokit, repo, configJson);
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error(
@@ -120,7 +120,7 @@ const checkConfigJsonExists = () => {
   }
 };
 
-const checkPolarityIntegrationUuid = async (configJson, octokit, repo) => {
+const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
   const polarityIntegrationUuid = get("polarityIntegrationUuid", configJson);
   if (!polarityIntegrationUuid) {
     throw new Error(
@@ -128,11 +128,15 @@ const checkPolarityIntegrationUuid = async (configJson, octokit, repo) => {
         `  * Add \`"polarityIntegrationUuid": "${uuidv1()}",\` to your \`./config/config.json\` to resolve`
     );
   }
-  const token = core.getInput('GITHUB_TOKEN');
-  octokit = github.getOctokit(token);
-  repo = get("context.payload.repository", github);
-  const toMergeIntoBranch = github.context.payload.pull_request.base.ref
-  const previousCommits = await getExistingFile(octokit, 'polarityio', repo.name, toMergeIntoBranch, 'config/config.json')
-  console.info({toMergeIntoBranch,previousCommits})
+  const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
+  console.info(JSON.stringify({ toMergeIntoBranch, octokit, repo }, null, 2));
+  const previousCommits = await getExistingFile(
+    octokit,
+    "polarityio",
+    repo.name,
+    toMergeIntoBranch,
+    "config/config.json"
+  );
+  console.info(JSON.stringify({ previousCommits }, null, 2));
 };
 module.exports = checkConfigFile;
