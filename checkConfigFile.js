@@ -3,7 +3,7 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const { v1: uuidv1 } = require("uuid");
 const { getOr, flow, forEach, thru, get } = require("lodash/fp");
-const { getExistingFile } = require("./octokitHelpers");
+const { getExistingFile, parseFileContent } = require("./octokitHelpers");
 
 const checkConfigFile = async (octokit, repo) => {
   try {
