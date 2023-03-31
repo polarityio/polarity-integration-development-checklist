@@ -2,7 +2,7 @@ const fs = require("fs");
 const fp = require("lodash/fp");
 const core = require("@actions/core");
 
-const checkPackageJsonFile = async (github) => {
+const checkPackageJsonFile = async (octokit, repo) => {
   try {
     const packageJson = JSON.parse(fs.readFileSync("package.json"));
 
@@ -10,7 +10,7 @@ const checkPackageJsonFile = async (github) => {
 
     checkVersionRegex(packageJson);
 
-    await checkVersionIsNew(packageJson, github);
+    await checkVersionIsNew(packageJson, octokit, repo);
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error("File Not Found: package.json");
@@ -31,7 +31,8 @@ const checkPrivateFlag = (packageJson) => {
 };
 
 const checkVersionRegex = (packageJson) => {
-  const semanticVersioningRegex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
+  const semanticVersioningRegex =
+    /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 
   const version = fp.getOr("failed_to_get", "version", packageJson);
   if (version === "failed_to_get") {
@@ -47,31 +48,30 @@ const checkVersionRegex = (packageJson) => {
   );
 };
 
-const checkVersionIsNew = async (packageJson, github) => {
-  const token = core.getInput('GITHUB_TOKEN');
-
-  const octokit = github.getOctokit(token);
-
-  const repo = fp.get('context.payload.repository', github);
-
+const checkVersionIsNew = async (packageJson, octokit, repo) => {
   const releaseTags = fp.getOr(
     [],
-    'data',
+    "data",
     await octokit.repos.listTags({
       owner: repo.owner.login,
-      repo: repo.name
+      repo: repo.name,
     })
   );
-  
+
   const version = fp.getOr("failed_to_get", "version", packageJson);
-  const matchingReleaseTag = fp.find((releaseTag) => releaseTag.name === version, releaseTags)
+  const matchingReleaseTag = fp.find(
+    (releaseTag) => releaseTag.name === version,
+    releaseTags
+  );
   if (matchingReleaseTag) {
     throw new Error(
       `Version in package.json already has a release on Github (${matchingReleaseTag.name})`
     );
   }
 
-  console.info("- Success: Version in package.json is new and unique on Github");
+  console.info(
+    "- Success: Version in package.json is new and unique on Github"
+  );
 };
 
 module.exports = checkPackageJsonFile;

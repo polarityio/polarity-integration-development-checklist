@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
+const { get } = require("lodash/fp");
 const checkConfigFile = require("./checkConfigFile");
 const checkLicenseFile = require("./checkLicenseFile");
 const checkReadmeFile = require("./checkReadmeFile");
@@ -11,8 +12,11 @@ const checkPackageLockFile = require("./checkPackageLockFile");
 const main = async () => {
   try {
     console.info("Starting Integration Development Checklist...\n");
+    const token = core.getInput('GITHUB_TOKEN');
+    const octokit = github.getOctokit(token);
+    const repo = get("context.payload.repository", github);
 
-    checkConfigFile();
+    await checkConfigFile(octokit, repo);
 
     checkLicenseFile();
 
@@ -22,7 +26,7 @@ const main = async () => {
 
     checkGitignoreFile();
 
-    await checkPackageJsonFile(github);
+    await checkPackageJsonFile(octokit, repo);
 
     checkPackageLockFile();
 

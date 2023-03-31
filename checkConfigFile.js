@@ -1,7 +1,11 @@
 const fs = require("fs");
-const { getOr, flow, forEach, thru } = require("lodash/fp");
+const core = require("@actions/core");
+const github = require("@actions/github");
+const { v1: uuidv1 } = require("uuid");
+const { getOr, flow, forEach, thru, get } = require("lodash/fp");
+const { getExistingFile, parseFileContent } = require("./octokitHelpers");
 
-const checkConfigFile = () => {
+const checkConfigFile = async (octokit, repo) => {
   try {
     const configJs = eval(fs.readFileSync("config/config.js", "utf8"));
 
@@ -14,6 +18,12 @@ const checkConfigFile = () => {
     checkIntegrationOptionsDescriptions(configJs);
 
     checkConfigJsonExists();
+
+    const configJson = JSON.parse(
+      fs.readFileSync("config/config.json", "utf8")
+    );
+
+    await checkPolarityIntegrationUuid(octokit, repo, configJson);
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error(
@@ -110,4 +120,40 @@ const checkConfigJsonExists = () => {
   }
 };
 
+const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
+  const polarityIntegrationUuid = get("polarityIntegrationUuid", configJson);
+  if (!polarityIntegrationUuid) {
+    throw new Error(
+      "Polarity Integration UUID not defined in config.json\n\n" +
+        `  * Add \`"polarityIntegrationUuid": "${uuidv1()}",\` to your \`./config/config.json\` to resolve`
+    );
+  }
+  const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
+  const previousPolarityIntegrationUuid = get(
+    "polarityIntegrationUuid",
+    JSON.parse(
+      parseFileContent(
+        await getExistingFile({
+          octokit,
+          repoName: repo.name,
+          branch: toMergeIntoBranch,
+          relativePath: "config/config.json",
+        })
+      )
+    )
+  );
+
+  if (
+    previousPolarityIntegrationUuid &&
+    previousPolarityIntegrationUuid !== polarityIntegrationUuid
+  ) {
+    throw new Error(
+      `Polarity Integration UUID in config.json does not match the UUID in the base branch config.json\n\n` +
+        `  * Update to \`"polarityIntegrationUuid": "${previousPolarityIntegrationUuid}",\` in your \`./config/config.json\` to resolve`
+    );
+  }
+  console.info(
+    "- Success: Config `polarityIntegrationUuid` is set and has not been changed in `config.json`"
+  )
+};
 module.exports = checkConfigFile;
