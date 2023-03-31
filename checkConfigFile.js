@@ -129,19 +129,28 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
     );
   }
   const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
-  const previousPolarityIntegrationUuid = flow(
-    parseFileContent,
-    JSON.parse,
-    get("polarityIntegrationUuid")
-  )(
+  const previousPolarityIntegrationUuid = get(
+    "polarityIntegrationUuid",
+    JSON.parse(
+      parseFileContent(
+        await getExistingFile({
+          octokit,
+          repoName: repo.name,
+          branch: toMergeIntoBranch,
+          relativePath: "config/config.json",
+        })
+      )
+    )
+  );
+
+  console.info(JSON.stringify({previousPolarityIntegrationUuid,asdf: parseFileContent(
     await getExistingFile({
       octokit,
       repoName: repo.name,
       branch: toMergeIntoBranch,
       relativePath: "config/config.json",
     })
-  );
-
+  )}, null, 2));
   if (
     previousPolarityIntegrationUuid &&
     previousPolarityIntegrationUuid !== polarityIntegrationUuid
