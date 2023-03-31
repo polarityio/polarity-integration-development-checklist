@@ -2,6 +2,7 @@ const fs = require("fs");
 const { v1: uuidv1 } = require("uuid");
 const { getOr, flow, forEach, thru, get } = require("lodash/fp");
 const { getExistingFile } = require("./octokitHelpers");
+const github = require("@actions/github");
 
 const checkConfigFile = async (octokit, repo) => {
   try {
@@ -125,11 +126,11 @@ const checkPolarityIntegrationUuid = async (configJson, octokit, repo) => {
 
     throw new Error(
       "Polarity Integration UUID not defined in config.json\n\n" +
-        `  * Add \`polarityIntegrationUuid: '${newUuid}'\` to your \`./config/config.json\` to resolve`
+        `  * Add \`"polarityIntegrationUuid": "${newUuid}",\` to your \`./config/config.json\` to resolve`
     );
   }
 
-  const toMergeIntoBranch = context.payload.pull_request.base.ref
+  const toMergeIntoBranch = github.context.payload.pull_request.base.ref
   const previousCommits = await getExistingFile(octokit, 'polarityio', repo.name, toMergeIntoBranch, 'config/config.json')
   console.info({toMergeIntoBranch,previousCommits})
 };
