@@ -61,7 +61,7 @@ const checkDefaultColor = (configJs) => {
     );
   }
 
-  console.info("- Success: 'defaultColor' is set in config.js");
+  console.info("- Success: Config 'defaultColor' is set in config.js");
 };
 
 const checkRequestOptions = (configJs) => {
@@ -128,30 +128,32 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
         `  * Add \`"polarityIntegrationUuid": "${uuidv1()}",\` to your \`./config/config.json\` to resolve`
     );
   }
-  
-  const toMergeIntoBranch = github.context.payload.pull_request.base.ref;
-  const previousPolarityIntegrationUuid = get(
-    "polarityIntegrationUuid",
-    JSON.parse(
-      parseFileContent(
-        await getExistingFile({
-          octokit,
-          repoName: repo.name,
-          branch: toMergeIntoBranch,
-          relativePath: "config/config.json",
-        })
-      ) || "{}"
-    )
-  );
 
-  if (
-    previousPolarityIntegrationUuid &&
-    previousPolarityIntegrationUuid !== polarityIntegrationUuid
-  ) {
-    throw new Error(
-      `Polarity Integration UUID in config.json does not match the UUID in the base branch config.json\n\n` +
-        `  * Update to \`"polarityIntegrationUuid": "${previousPolarityIntegrationUuid}",\` in your \`./config/config.json\` to resolve`
+  const toMergeIntoBranch = get('context.payload.pull_request.base.ref', github);
+  if(toMergeIntoBranch) {
+    const previousPolarityIntegrationUuid = get(
+      "polarityIntegrationUuid",
+      JSON.parse(
+        parseFileContent(
+          await getExistingFile({
+            octokit,
+            repoName: repo.name,
+            branch: toMergeIntoBranch,
+            relativePath: "config/config.json",
+          })
+        ) || "{}"
+      )
     );
+  
+    if (
+      previousPolarityIntegrationUuid &&
+      previousPolarityIntegrationUuid !== polarityIntegrationUuid
+    ) {
+      throw new Error(
+        `Polarity Integration UUID in config.json does not match the UUID in the base branch config.json\n\n` +
+          `  * Update to \`"polarityIntegrationUuid": "${previousPolarityIntegrationUuid}",\` in your \`./config/config.json\` to resolve`
+      );
+    }
   }
 
   console.info(
