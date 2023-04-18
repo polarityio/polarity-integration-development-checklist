@@ -19,8 +19,10 @@ const checkConfigFile = async (octokit, repo) => {
 
     checkConfigJsonExists();
 
+    const configFile = fs.readFileSync("config/config.json", "utf8")
+    console.info({ configFile })
     const configJson = JSON.parse(
-      fs.readFileSync("config/config.json", "utf8")
+      configFile
     );
 
     await checkPolarityIntegrationUuid(octokit, repo, configJson);
