@@ -87,7 +87,7 @@ const checkRequestOptions = (config, isJson) => {
 
   checkRequestOptionsStringProperties(request, configFileName);
 
-  checkIfRejectUnauthorizedIsSet(request, configFileName);
+  checkIfRejectUnauthorizedIsSet(request);
 
   console.info(
     `- Success: Config Request Options Defaults set correctly in ${configFileName}`
@@ -128,12 +128,12 @@ const checkEmptyRequestProperty = (request, propertyKey, configFileName) => {
   }
 };
 
-const checkIfRejectUnauthorizedIsSet = (request, configFileName) => {
+const checkIfRejectUnauthorizedIsSet = (request) => {
   if (
     getOr("failed_to_get", "rejectUnauthorized", request) !== "failed_to_get"
   ) {
     throw new Error(
-      `Request Option parameter \`rejectUnauthorized\` should not be set in ${configFileName}\n\n`
+      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n\n`
     );
   }
 };
