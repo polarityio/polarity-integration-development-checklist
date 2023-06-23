@@ -133,7 +133,8 @@ const checkIfRejectUnauthorizedIsSet = (request) => {
     getOr("failed_to_get", "rejectUnauthorized", request) !== "failed_to_get"
   ) {
     throw new Error(
-      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n\n`
+      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n\n`+
+        "  * Remove the `rejectUnauthorized` property from your config files to resolve"
     );
   }
 };
