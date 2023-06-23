@@ -133,7 +133,7 @@ const checkIfRejectUnauthorizedIsSet = (request) => {
     getOr("failed_to_get", "rejectUnauthorized", request) !== "failed_to_get"
   ) {
     throw new Error(
-      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n\n`+
+      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n`+
         "  * Remove the `rejectUnauthorized` property from your config files to resolve"
     );
   }
@@ -181,7 +181,7 @@ const checkEntityTypes = (configJs, configJson) => {
   if (size(configJsInvalidEntityTypes) || size(configJsonInvalidEntityTypes)) {
     const createErrorMessage = (invalidEntityTypes, configFileName) =>
       size(invalidEntityTypes)
-        ? `The following \`entityTypes\` in ${configFileName} are invalid\n\n` +
+        ? `The following \`entityTypes\` in ${configFileName} are invalid\n` +
           `  * ${join(invalidEntityTypes, ", ")}\n`
         : "";
 
@@ -240,7 +240,7 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
   const polarityIntegrationUuid = get("polarityIntegrationUuid", configJson);
   if (!polarityIntegrationUuid) {
     throw new Error(
-      "Polarity Integration UUID not defined in config.json\n\n" +
+      "Polarity Integration UUID not defined in config.json\n" +
         `  * Add \`"polarityIntegrationUuid": "${uuidv1()}",\` to your \`./config/config.json\` to resolve`
     );
   }
