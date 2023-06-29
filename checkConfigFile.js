@@ -38,14 +38,14 @@ const checkConfigFile = async (octokit, repo) => {
     checkRequestOptions(configJson, true);
 
     await checkPolarityIntegrationUuid(octokit, repo, configJson);
-  } catch (e) {
-    if (e.message.includes("no such file or directory")) {
+  } catch (error) {
+    if (error.message.includes("no such file or directory")) {
       throw new Error(
         "File Not Found: config.js\n\n" +
           "  * Add `./config/config.js` file to your integration to resolve"
       );
     }
-    throw e;
+    throw error;
   }
 };
 
@@ -161,16 +161,16 @@ const getConfigJson = () => {
     const configFile = fs.readFileSync("config/config.json", "utf8");
     const configJson = JSON.parse(configFile);
     return configJson;
-  } catch (e) {
-    if (e.message.includes("no such file or directory")) {
+  } catch (error) {
+    if (error.message.includes("no such file or directory")) {
       throw new Error("File Not Found: config.json");
     }
-    if (e.message.includes("Unexpected string in JSON at position")) {
+    if (error.message.includes("Unexpected string in JSON at position")) {
       throw new Error(
         "Invalid JSON in config.json. Please verify your syntax is correct then push."
       );
     }
-    throw e;
+    throw error;
   }
 };
 
@@ -266,12 +266,12 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
         )
       );
     } catch (error) {
-      if (e.message.includes("Unexpected string in JSON at position")) {
+      if (error.message.includes("Unexpected string in JSON at position")) {
         console.info(
           "\n NOTE: Unable to parse other branch's `config/config.json`, which means the check for the polarityIntegrationUuid not changing is not being run\n\n"
         );
       }
-      throw e;
+      throw error;
     }
 
     if (
