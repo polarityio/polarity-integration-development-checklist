@@ -252,17 +252,19 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
   if (toMergeIntoBranch) {
     let previousPolarityIntegrationUuid;
     try {
+      const previousBranchConfigJson = parseFileContent(
+        await getExistingFile({
+          octokit,
+          repoName: repo.name,
+          branch: toMergeIntoBranch,
+          relativePath: "config/config.json",
+        })
+      ) 
+      console.info(JSON.stringify({ previousBranchConfigJson}));
       previousPolarityIntegrationUuid = get(
         "polarityIntegrationUuid",
         JSON.parse(
-          parseFileContent(
-            await getExistingFile({
-              octokit,
-              repoName: repo.name,
-              branch: toMergeIntoBranch,
-              relativePath: "config/config.json",
-            })
-          ) || "{}"
+          previousBranchConfigJson || "{}"
         )
       );
     } catch (error) {
