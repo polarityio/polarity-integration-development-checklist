@@ -260,7 +260,7 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
           relativePath: "config/config.json",
         })
       ) 
-      console.info(JSON.stringify({ previousBranchConfigJson}));
+      
       previousPolarityIntegrationUuid = get(
         "polarityIntegrationUuid",
         JSON.parse(
