@@ -2,32 +2,50 @@ const fs = require("fs");
 const core = require("@actions/core");
 const github = require("@actions/github");
 const { v1: uuidv1 } = require("uuid");
-const { getOr, flow, forEach, thru, get } = require("lodash/fp");
+const {
+  getOr,
+  flow,
+  forEach,
+  thru,
+  get,
+  negate,
+  size,
+  filter,
+  map,
+  reduce,
+  join,
+} = require("lodash/fp");
 const { getExistingFile, parseFileContent } = require("./octokitHelpers");
 
 const checkConfigFile = async (octokit, repo) => {
   try {
     const configJs = eval(fs.readFileSync("config/config.js", "utf8"));
 
-    checkLoggingLevel(configJs);
-
-    checkDefaultColor(configJs);
-
-    checkRequestOptions(configJs);
+    // TODO: Add description, default color, & logging level checks for config.json
 
     checkIntegrationOptionsDescriptions(configJs);
 
+    checkDefaultColor(configJs);
+
+    checkLoggingLevel(configJs);
+
+    checkRequestOptions(configJs);
+
     const configJson = getConfigJson();
 
+    checkEntityTypes(configJs, configJson);
+
+    checkRequestOptions(configJson, true);
+
     await checkPolarityIntegrationUuid(octokit, repo, configJson);
-  } catch (e) {
-    if (e.message.includes("no such file or directory")) {
+  } catch (error) {
+    if (error.message.includes("no such file or directory")) {
       throw new Error(
         "File Not Found: config.js\n\n" +
           "  * Add `./config/config.js` file to your integration to resolve"
       );
     }
-    throw e;
+    throw error;
   }
 };
 
@@ -60,30 +78,63 @@ const checkDefaultColor = (configJs) => {
   console.info("- Success: Config 'defaultColor' is set in config.js");
 };
 
-const checkRequestOptions = (configJs) => {
-  const request = getOr("failed_to_get", "request", configJs);
+const checkRequestOptions = (config, isJson) => {
+  const configFileName = `config.js${isJson ? "on" : ""}`;
+  const request = getOr("failed_to_get", "request", config);
   if (request === "failed_to_get") {
-    throw new Error("Request Options object not defined in config.js");
-  } else {
-    ["cert", "key", "passphrase", "ca", "proxy"].forEach(
-      checkEmptyRequestProperty(request)
-    );
+    throw new Error(`Request Options object not defined in ${configFileName}`);
+  }
 
-    console.info(
-      "- Success: Config Request Options Defaults set correctly in config.js"
+  checkRequestOptionsStringProperties(request, configFileName);
+
+  checkIfRejectUnauthorizedIsSet(request);
+
+  console.info(
+    `- Success: Config Request Options Defaults set correctly in ${configFileName}`
+  );
+};
+
+const checkRequestOptionsStringProperties = (request, configFileName) => {
+  const emptyRequestPropertyErrorMessages = reduce(
+    (agg, propertyKey) => {
+      const emptyRequestPropertyErrorMessage = checkEmptyRequestProperty(
+        request,
+        propertyKey,
+        configFileName
+      );
+
+      return emptyRequestPropertyErrorMessage
+        ? agg.concat(emptyRequestPropertyErrorMessage)
+        : agg;
+    },
+    [],
+    ["cert", "key", "passphrase", "ca", "proxy"]
+  );
+
+  if (size(emptyRequestPropertyErrorMessages)) {
+    throw new Error(
+      `Request Option parameter(s) in ${configFileName} are invalid\n\n` +
+        join("\n", emptyRequestPropertyErrorMessages)
     );
   }
 };
 
-const checkEmptyRequestProperty = (request) => (propertyKey) => {
+const checkEmptyRequestProperty = (request, propertyKey, configFileName) => {
   const result = getOr("failed_to_get", propertyKey, request);
   if (result === "failed_to_get") {
-    throw new Error(
-      `'${propertyKey}' property in Request Options object not defined in config.js`
-    );
+    return `  * '${propertyKey}' property in Request Options object not defined in ${configFileName}`;
   } else if (result !== "") {
+    return `  * '${propertyKey}' property in Request Options object set to non-empty value in ${configFileName}: '${result}'`;
+  }
+};
+
+const checkIfRejectUnauthorizedIsSet = (request) => {
+  if (
+    getOr("failed_to_get", "rejectUnauthorized", request) !== "failed_to_get"
+  ) {
     throw new Error(
-      `'${propertyKey}' property in Request Options object set to non-empty value in config.js: '${result}'`
+      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n`+
+        "  * Remove the `rejectUnauthorized` property from your config files to resolve"
     );
   }
 };
@@ -110,24 +161,86 @@ const getConfigJson = () => {
     const configFile = fs.readFileSync("config/config.json", "utf8");
     const configJson = JSON.parse(configFile);
     return configJson;
-  } catch (e) {
-    if (e.message.includes("no such file or directory")) {
+  } catch (error) {
+    if (error.message.includes("no such file or directory")) {
       throw new Error("File Not Found: config.json");
     }
-    if (e.message.includes("Unexpected string in JSON at position")) {
+    if (error.message.includes("Unexpected string in JSON at position")) {
       throw new Error(
         "Invalid JSON in config.json. Please verify your syntax is correct then push."
       );
     }
-    throw e;
+    throw error;
   }
 };
+
+const checkEntityTypes = (configJs, configJson) => {
+  const configJsInvalidEntityTypes = getInvalidEntityTypes(configJs);
+  const configJsonInvalidEntityTypes = getInvalidEntityTypes(configJson);
+
+  if (size(configJsInvalidEntityTypes) || size(configJsonInvalidEntityTypes)) {
+    const createErrorMessage = (invalidEntityTypes, configFileName) =>
+      size(invalidEntityTypes)
+        ? `The following \`entityTypes\` in ${configFileName} are invalid\n` +
+          `  * ${join(invalidEntityTypes, ", ")}\n`
+        : "";
+
+    const configJsErrorMessage = createErrorMessage(
+      configJsInvalidEntityTypes,
+      "config.js"
+    );
+    const configJsonErrorMessage = createErrorMessage(
+      configJsonInvalidEntityTypes,
+      "config.json"
+    );
+
+    /*TODO Add improvement to do a toLower comparison between invalid types to 
+      give specific suggestions of what alternative types might be used instead 
+      of the invalid type that was added to a config file*/
+    throw new Error(
+      configJsErrorMessage +
+        configJsonErrorMessage +
+        `It's possible this is an issue with spelling or casing.  The possible valid \`entityTypes\` are: ${flow(
+          map((validEntityType) => `"${validEntityType}"`),
+          join(", ")
+        )(POSSIBLE_VALID_ENTITY_TYPES)}`
+    );
+  }
+  console.info(
+    "- Success: Config `entityTypes` are valid in config.js & config.json"
+  );
+};
+
+const POSSIBLE_VALID_ENTITY_TYPES = [
+  "IP",
+  "IPv4",
+  "IPv4CIDR",
+  "IPv6",
+  "MAC",
+  "MD5",
+  "SHA1",
+  "SHA256",
+  "cve",
+  "domain",
+  "email",
+  "hash",
+  "string",
+  "url",
+  "*",
+];
+const entityTypeIsValid = (entityType) =>
+  POSSIBLE_VALID_ENTITY_TYPES.includes(entityType);
+
+const getInvalidEntityTypes = flow(
+  get("entityTypes"),
+  filter(negate(entityTypeIsValid))
+);
 
 const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
   const polarityIntegrationUuid = get("polarityIntegrationUuid", configJson);
   if (!polarityIntegrationUuid) {
     throw new Error(
-      "Polarity Integration UUID not defined in config.json\n\n" +
+      "Polarity Integration UUID not defined in config.json\n" +
         `  * Add \`"polarityIntegrationUuid": "${uuidv1()}",\` to your \`./config/config.json\` to resolve`
     );
   }
@@ -139,26 +252,28 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
   if (toMergeIntoBranch) {
     let previousPolarityIntegrationUuid;
     try {
+      const previousBranchConfigJson = parseFileContent(
+        await getExistingFile({
+          octokit,
+          repoName: repo.name,
+          branch: toMergeIntoBranch,
+          relativePath: "config/config.json",
+        })
+      ) 
+      
       previousPolarityIntegrationUuid = get(
         "polarityIntegrationUuid",
         JSON.parse(
-          parseFileContent(
-            await getExistingFile({
-              octokit,
-              repoName: repo.name,
-              branch: toMergeIntoBranch,
-              relativePath: "config/config.json",
-            })
-          ) || "{}"
+          previousBranchConfigJson || "{}"
         )
       );
     } catch (error) {
-      if (e.message.includes("Unexpected string in JSON at position")) {
+      if (error.message.includes("Unexpected string in JSON at position")) {
         console.info(
           "\n NOTE: Unable to parse other branch's `config/config.json`, which means the check for the polarityIntegrationUuid not changing is not being run\n\n"
         );
       }
-      throw e;
+      throw error;
     }
 
     if (

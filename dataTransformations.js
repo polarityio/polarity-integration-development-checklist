@@ -3,7 +3,7 @@ const parseErrorToReadableJSON = (error) =>
 
 const encodeBase64 = (str) => str && Buffer.from(str).toString('base64');
 
-const decodeBase64 = (str) => str && Buffer.from(str, 'base64').toString('ascii');
+const decodeBase64 = (str) => str && Buffer.from(str, 'base64').toString('utf8');
 
 const sleep = async (ms = 2000) => new Promise((r) => setTimeout(r, ms));
 
