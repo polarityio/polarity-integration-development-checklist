@@ -35,8 +35,6 @@ const checkConfigFile = async (octokit, repo) => {
 
     checkEntityTypes(configJs, configJson);
 
-    checkRequestOptions(configJson, true);
-
     checkDataTypes(configJson);
 
     await checkPolarityIntegrationUuid(octokit, repo, configJson);
@@ -80,8 +78,8 @@ const checkDefaultColor = (configJs) => {
   console.info("- Success: Config 'defaultColor' is set in config.js");
 };
 
-const checkRequestOptions = (config, isJson) => {
-  const configFileName = `config.js${isJson ? "on" : ""}`;
+const checkRequestOptions = (config) => {
+  const configFileName = 'config.js';
   const request = getOr("failed_to_get", "request", config);
   if (request === "failed_to_get") {
     throw new Error(`Request Options object not defined in ${configFileName}`);
