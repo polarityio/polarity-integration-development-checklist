@@ -322,16 +322,16 @@ const createExpandableTypeErrorMessage = (
   if (size(expandableTypesBeingUsed)) {
     if (expandableTypesBeingUsed.includes("*")) {
       errorMessage +=
-        `The following \`"${location}"\` in config.json are using expandable data types\n\n` +
-        `  * Must make \`"*"\` -> \`["IPv4", "IPv4CIDR", "IPv6", "domain", "url", "MD5", "SHA1", "SHA256", "email", "cve", "MAC", "string"]\``;
+        `The following "${location}" in config.json are using expandable data types\n` +
+        `  * Must make "*" -> ["IPv4", "IPv4CIDR", "IPv6", "domain", "url", "MD5", "SHA1", "SHA256", "email", "cve", "MAC", "string"]`;
     } else {
-      errorMessage += `The following \`"${location}"\` in config.json are using expandable data types\n\n`;
+      errorMessage += `The following "${location}" in config.json are using expandable data types\n`;
 
       if (expandableTypesBeingUsed.includes("IP")) {
-        errorMessage += `  * Must make \`"IP"\` -> \`"IPv4", "IPv6",\`\n`;
+        errorMessage += `  * Must make "IP" -> "IPv4", "IPv6",\n`;
       }
       if (expandableTypesBeingUsed.includes("hash")) {
-        errorMessage += `  * Must make \`"hash"\` -> \`"MD5", "SHA1", "SHA256",\``;
+        errorMessage += `  * Must make "hash" -> "MD5", "SHA1", "SHA256",`;
       }
     }
     errorMessage += "\n";
