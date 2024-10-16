@@ -37,6 +37,8 @@ const checkConfigFile = async (octokit, repo) => {
 
     checkRequestOptions(configJson, true);
 
+    checkDataTypes(configJson);
+
     await checkPolarityIntegrationUuid(octokit, repo, configJson);
   } catch (error) {
     if (error.message.includes("no such file or directory")) {
@@ -133,7 +135,7 @@ const checkIfRejectUnauthorizedIsSet = (request) => {
     getOr("failed_to_get", "rejectUnauthorized", request) !== "failed_to_get"
   ) {
     throw new Error(
-      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n`+
+      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n` +
         "  * Remove the `rejectUnauthorized` property from your config files to resolve"
     );
   }
@@ -259,13 +261,11 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
           branch: toMergeIntoBranch,
           relativePath: "config/config.json",
         })
-      ) 
-      
+      );
+
       previousPolarityIntegrationUuid = get(
         "polarityIntegrationUuid",
-        JSON.parse(
-          previousBranchConfigJson || "{}"
-        )
+        JSON.parse(previousBranchConfigJson || "{}")
       );
     } catch (error) {
       if (error.message.includes("Unexpected string in JSON at position")) {
@@ -291,4 +291,52 @@ const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
     "- Success: Config `polarityIntegrationUuid` is set and has not been changed in `config.json`"
   );
 };
+
+const EXPANDABLE_TYPES = ["IP", "hash", "*"];
+
+const checkDataTypes = (configJson) => {
+  let errorMessage = "";
+
+  const expandableEntityTypesBeingUsed = flow(
+    get("entityTypes"),
+    filter((type) => EXPANDABLE_TYPES.includes(type))
+  )(configJson);
+
+  errorMessage += createExpandableTypeErrorMessage(
+    "entityTypes",
+    expandableEntityTypesBeingUsed
+  );
+
+  if (errorMessage) {
+    throw new Error(errorMessage);
+  } else {
+    console.info("- Success: No expandable types used in config.json");
+  }
+};
+
+const createExpandableTypeErrorMessage = (
+  location,
+  expandableTypesBeingUsed
+) => {
+  let errorMessage = "";
+  if (size(expandableTypesBeingUsed)) {
+    if (expandableTypesBeingUsed.includes("*")) {
+      errorMessage +=
+        `The following \`"${location}"\` in config.json are using expandable data types\n\n` +
+        `  * Must make \`"*"\` -> \`["IPv4", "IPv4CIDR", "IPv6", "domain", "url", "MD5", "SHA1", "SHA256", "email", "cve", "MAC", "string"]\``;
+    } else {
+      errorMessage += `The following \`"${location}"\` in config.json are using expandable data types\n\n`;
+
+      if (expandableTypesBeingUsed.includes("IP")) {
+        errorMessage += `  * Must make \`"IP"\` -> \`"IPv4", "IPv6",\`\n`;
+      }
+      if (expandableTypesBeingUsed.includes("hash")) {
+        errorMessage += `  * Must make \`"hash"\` -> \`"MD5", "SHA1", "SHA256",\``;
+      }
+    }
+    errorMessage += "\n";
+  }
+  return errorMessage;
+};
+
 module.exports = checkConfigFile;
