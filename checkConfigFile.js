@@ -19,21 +19,15 @@ const { getExistingFile, parseFileContent } = require("./octokitHelpers");
 
 const checkConfigFile = async (octokit, repo) => {
   try {
-    const configJs = eval(fs.readFileSync("config/config.js", "utf8"));
-
-    // TODO: Add description, default color, & logging level checks for config.json
-
-    checkIntegrationOptionsDescriptions(configJs);
-
-    checkDefaultColor(configJs);
-
-    checkLoggingLevel(configJs);
-
-    checkRequestOptions(configJs);
-
     const configJson = getConfigJson();
+    
+    checkIntegrationOptionsDescriptions(configJson);
 
-    checkEntityTypes(configJs, configJson);
+    checkDefaultColor(configJson);
+
+    checkLoggingLevel(configJson);
+
+    checkEntityTypes(configJson);
 
     checkDataTypes(configJson);
 
@@ -49,94 +43,33 @@ const checkConfigFile = async (octokit, repo) => {
   }
 };
 
-const checkLoggingLevel = (configJs) => {
-  const loggingLevel = getOr("failed_to_get", "logging.level", configJs);
+const checkLoggingLevel = (configJson) => {
+  const loggingLevel = getOr("failed_to_get", "logging.level", configJson);
   if (loggingLevel === "failed_to_get") {
     throw new Error(
-      "Logging Level not defined in config.js\n\n" +
-        "  * Add `logging: { level: 'info' }` to your `./config/config.js` to resolve"
+      "Logging Level not defined in config.json\n\n" +
+        "  * Add `logging: { level: 'info' }` to your `./config/config.json` to resolve"
     );
   } else if (loggingLevel !== "info") {
     throw new Error(
-      "Logging Level not set to 'info' in config.js\n\n" +
-        "  * Set `logging.level` to `info` to your `./config/config.js` to resolve"
+      "Logging Level not set to 'info' in config.json\n\n" +
+        "  * Set `logging.level` to `info` to your `./config/config.json` to resolve"
     );
   } else {
-    console.info("- Success: Config Logging Level set to 'info' in config.js");
+    console.info("- Success: Config Logging Level set to 'info' in config.json");
   }
 };
 
-const checkDefaultColor = (configJs) => {
-  const defaultColor = getOr("failed_to_get", "defaultColor", configJs);
+const checkDefaultColor = (configJson) => {
+  const defaultColor = getOr("failed_to_get", "defaultColor", configJson);
   if (defaultColor === "failed_to_get") {
     throw new Error(
-      "Default Color not defined in config.js\n\n" +
-        "  * `defaultColor: 'light-blue'` to your `./config/config.js` to resolve"
+      "Default Color not defined in config.json\n\n" +
+        "  * `defaultColor: 'light-blue'` to your `./config/config.json to resolve"
     );
   }
 
-  console.info("- Success: Config 'defaultColor' is set in config.js");
-};
-
-const checkRequestOptions = (config) => {
-  const configFileName = 'config.js';
-  const request = getOr("failed_to_get", "request", config);
-  if (request === "failed_to_get") {
-    throw new Error(`Request Options object not defined in ${configFileName}`);
-  }
-
-  checkRequestOptionsStringProperties(request, configFileName);
-
-  checkIfRejectUnauthorizedIsSet(request);
-
-  console.info(
-    `- Success: Config Request Options Defaults set correctly in ${configFileName}`
-  );
-};
-
-const checkRequestOptionsStringProperties = (request, configFileName) => {
-  const emptyRequestPropertyErrorMessages = reduce(
-    (agg, propertyKey) => {
-      const emptyRequestPropertyErrorMessage = checkEmptyRequestProperty(
-        request,
-        propertyKey,
-        configFileName
-      );
-
-      return emptyRequestPropertyErrorMessage
-        ? agg.concat(emptyRequestPropertyErrorMessage)
-        : agg;
-    },
-    [],
-    ["cert", "key", "passphrase", "ca", "proxy"]
-  );
-
-  if (size(emptyRequestPropertyErrorMessages)) {
-    throw new Error(
-      `Request Option parameter(s) in ${configFileName} are invalid\n\n` +
-        join("\n", emptyRequestPropertyErrorMessages)
-    );
-  }
-};
-
-const checkEmptyRequestProperty = (request, propertyKey, configFileName) => {
-  const result = getOr("failed_to_get", propertyKey, request);
-  if (result === "failed_to_get") {
-    return `  * '${propertyKey}' property in Request Options object not defined in ${configFileName}`;
-  } else if (result !== "") {
-    return `  * '${propertyKey}' property in Request Options object set to non-empty value in ${configFileName}: '${result}'`;
-  }
-};
-
-const checkIfRejectUnauthorizedIsSet = (request) => {
-  if (
-    getOr("failed_to_get", "rejectUnauthorized", request) !== "failed_to_get"
-  ) {
-    throw new Error(
-      `Request Option parameter \`rejectUnauthorized\` should not be set in config file\n` +
-        "  * Remove the `rejectUnauthorized` property from your config files to resolve"
-    );
-  }
+  console.info("- Success: Config 'defaultColor' is set in config.json");
 };
 
 const checkIntegrationOptionsDescriptions = flow(
@@ -145,13 +78,13 @@ const checkIntegrationOptionsDescriptions = flow(
     const description = option.description;
     if (!description) {
       throw new Error(
-        `Config Integration Option ${option.name} in config.js does not have a description`
+        `Config Integration Option ${option.name} in config.json does not have a description`
       );
     }
   }),
   thru(() =>
     console.info(
-      "- Success: Config Integration Options all have descriptions in config.js"
+      "- Success: Config Integration Options all have descriptions in config.json"
     )
   )
 );
@@ -174,21 +107,16 @@ const getConfigJson = () => {
   }
 };
 
-const checkEntityTypes = (configJs, configJson) => {
-  const configJsInvalidEntityTypes = getInvalidEntityTypes(configJs);
+const checkEntityTypes = (configJson) => {
   const configJsonInvalidEntityTypes = getInvalidEntityTypes(configJson);
 
-  if (size(configJsInvalidEntityTypes) || size(configJsonInvalidEntityTypes)) {
+  if (size(configJsonInvalidEntityTypes)) {
     const createErrorMessage = (invalidEntityTypes, configFileName) =>
       size(invalidEntityTypes)
         ? `The following \`entityTypes\` in ${configFileName} are invalid\n` +
           `  * ${join(invalidEntityTypes, ", ")}\n`
         : "";
 
-    const configJsErrorMessage = createErrorMessage(
-      configJsInvalidEntityTypes,
-      "config.js"
-    );
     const configJsonErrorMessage = createErrorMessage(
       configJsonInvalidEntityTypes,
       "config.json"
@@ -198,7 +126,6 @@ const checkEntityTypes = (configJs, configJson) => {
       give specific suggestions of what alternative types might be used instead 
       of the invalid type that was added to a config file*/
     throw new Error(
-      configJsErrorMessage +
         configJsonErrorMessage +
         `It's possible this is an issue with spelling or casing.  The possible valid \`entityTypes\` are: ${flow(
           map((validEntityType) => `"${validEntityType}"`),
@@ -207,12 +134,11 @@ const checkEntityTypes = (configJs, configJson) => {
     );
   }
   console.info(
-    "- Success: Config `entityTypes` are valid in config.js & config.json"
+    "- Success: Config `entityTypes` are valid in config.json"
   );
 };
 
 const POSSIBLE_VALID_ENTITY_TYPES = [
-  "IP",
   "IPv4",
   "IPv4CIDR",
   "IPv6",
@@ -223,11 +149,10 @@ const POSSIBLE_VALID_ENTITY_TYPES = [
   "cve",
   "domain",
   "email",
-  "hash",
   "string",
   "url",
-  "*",
 ];
+
 const entityTypeIsValid = (entityType) =>
   POSSIBLE_VALID_ENTITY_TYPES.includes(entityType);
 
