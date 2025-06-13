@@ -1,12 +1,12 @@
 {
   "name": "polarity-integration-development-checklist",
-  "version": "v1.0.2",
+  "version": "1.1.0",
   "description": "Checks a list of requirements found in the Polarity Integration Development Checklist.",
   "main": "index.js",
   "dependencies": {
-    "@actions/core": "^1.10.0",
-    "@actions/github": "^4.0.0",
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
     "lodash": "^4.17.21",
-    "uuid": "^9.0.0"
+    "uuid": "^11.1.0"
   }
 }
