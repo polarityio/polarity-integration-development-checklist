@@ -27,3 +27,4 @@ README.html
 
 # Ignored installed NPM modules
 test-runner.js
+node_modules
