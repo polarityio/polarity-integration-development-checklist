@@ -31,6 +31,10 @@ const checkConfigFile = async (octokit, repo) => {
 
     checkDataTypes(configJson);
 
+    checkWebComponentsRuntimeVersion(configJson);
+
+    checkWebComponentsElementVersions(configJson);
+
     await checkPolarityIntegrationUuid(octokit, repo, configJson);
   } catch (error) {
     if (error.message.includes("no such file or directory")) {
@@ -160,6 +164,61 @@ const getInvalidEntityTypes = flow(
   get("entityTypes"),
   filter(negate(entityTypeIsValid))
 );
+
+const checkWebComponentsRuntimeVersion = (configJson) => {
+  const webComponents = get("webComponents", configJson);
+  if (webComponents) {
+    const runtimeVersion = get("runtimeVersion", configJson);
+    if (runtimeVersion !== 2) {
+      throw new Error(
+        "v2 Integration Missing `runtimeVersion` in config.json\n\n" +
+          "  * When `webComponents` is defined, `runtimeVersion` must be set to `2` in your `./config/config.json` to resolve"
+      );
+    }
+    console.info(
+      "- Success: Config `runtimeVersion` is set to `2` in config.json"
+    );
+  }
+};
+
+const checkWebComponentsElementVersions = (configJson) => {
+  const components = getOr([], "webComponents.components", configJson);
+  if (!size(components)) return;
+
+  const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+  const packageVersion = get("version", packageJson);
+  if (!packageVersion) {
+    throw new Error(
+      "Unable to check webComponents element versions: `version` is not defined in package.json"
+    );
+  }
+
+  const expectedSuffix = `v${packageVersion.replace(/\./g, "-")}`;
+
+  const mismatched = flow(
+    filter((component) => {
+      const element = get("element", component);
+      return element && !element.endsWith(expectedSuffix);
+    }),
+    map(get("element"))
+  )(components);
+
+  if (size(mismatched)) {
+    throw new Error(
+      "webComponents element version mismatch in config.json\n\n" +
+        `  * The following elements do not end with \`${expectedSuffix}\` (expected from package.json version ${packageVersion}):\n` +
+        flow(
+          map((el) => `    - ${el}`),
+          join("\n")
+        )(mismatched) +
+        `\n  * Update the element version suffix to match the package.json version to resolve`
+    );
+  }
+
+  console.info(
+    `- Success: All webComponents element versions match package.json version (${expectedSuffix})`
+  );
+};
 
 const checkPolarityIntegrationUuid = async (octokit, repo, configJson) => {
   const polarityIntegrationUuid = get("polarityIntegrationUuid", configJson);
