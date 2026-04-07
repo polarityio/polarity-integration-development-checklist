@@ -15,6 +15,9 @@ Checks a list of requirements found in the Polarity Integration Development Chec
   - Verifying Request Options are set correctly including
     - `cert`, `key`, `passphrase`, `ca`, and `proxy` all having the value `''`
   - Verifying all Integration Options have a description containing content
+  - v2 Integration Checks
+    - If `webComponents` is defined, verifying `runtimeVersion` is set to `2`
+    - If `webComponents.components` is defined, verifying each component's `element` version suffix matches the `version` in package.json (e.g., package.json version `3.0.1` expects elements to end with `v3-0-1`)
 - package.json File Checks 
   - Verifying the package.json file exists
   - Verifying the `private` flag is set to true
