@@ -10,6 +10,8 @@ const checkPackageJsonFile = async (octokit, repo) => {
 
     checkVersionRegex(packageJson);
 
+    checkV2MajorVersion(packageJson);
+
     await checkVersionIsNew(packageJson, octokit, repo);
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
@@ -46,6 +48,36 @@ const checkVersionRegex = (packageJson) => {
   console.info(
     "- Success: Version property is correctly formatted in package.json"
   );
+};
+
+const checkV2MajorVersion = (packageJson) => {
+  try {
+    const configFile = fs.readFileSync("config/config.json", "utf8");
+    const configJson = JSON.parse(configFile);
+    const runtimeVersion = fp.get("runtimeVersion", configJson);
+
+    if (runtimeVersion !== 2) return;
+
+    const version = fp.getOr("", "version", packageJson);
+    const majorVersion = parseInt(version.split(".")[0], 10);
+
+    if (majorVersion !== 4) {
+      throw new Error(
+        "v2 Integration version must have a major version of 4 in package.json\n\n" +
+          `  * Current version is \`${version}\` (major version ${majorVersion})\n` +
+          "  * Update the version in `package.json` to start with `4.x.x` to resolve"
+      );
+    }
+
+    console.info(
+      "- Success: v2 Integration has correct major version (4) in package.json"
+    );
+  } catch (error) {
+    if (error.message.includes("no such file or directory")) {
+      return;
+    }
+    throw error;
+  }
 };
 
 const checkVersionIsNew = async (packageJson, octokit, repo) => {
