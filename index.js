@@ -8,6 +8,7 @@ const checkPrettierRcFile = require("./checkPrettierRcFile");
 const checkGitignoreFile = require("./checkGitignoreFile");
 const checkPackageJsonFile = require("./checkPackageJsonFile");
 const checkPackageLockFile = require("./checkPackageLockFile");
+const checkTargetBranch = require("./checkTargetBranch");
 
 const main = async () => {
   try {
@@ -15,6 +16,8 @@ const main = async () => {
     const token = core.getInput('GITHUB_TOKEN');
     const octokit = github.getOctokit(token);
     const repo = get("context.payload.repository", github);
+
+    checkTargetBranch();
 
     await checkConfigFile(octokit, repo);
 
