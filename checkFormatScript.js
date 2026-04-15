@@ -12,7 +12,7 @@ const checkFormatScript = () => {
       return;
     }
 
-    execWithNodeVersion(18, "npm run format");
+    execWithNodeVersion(24, "npm run format");
 
     console.info("- Success: `npm run format` passed with no errors");
   } catch (e) {
