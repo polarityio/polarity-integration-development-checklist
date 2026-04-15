@@ -14,7 +14,7 @@ const checkTestScript = () => {
 
     execWithNodeVersion(24, "npm run test");
 
-    console.info("- Success: `npm run test` passed with no errors");
+    console.info("- Success: `npm run test` passed with no errors (Node 24)");
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error("File Not Found: package.json");
