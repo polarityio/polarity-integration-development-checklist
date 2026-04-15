@@ -1,6 +1,6 @@
 const fs = require("fs");
-const { execSync } = require("child_process");
 const fp = require("lodash/fp");
+const execWithNodeVersion = require("./execWithNodeVersion");
 
 const checkFormatScript = () => {
   try {
@@ -12,7 +12,7 @@ const checkFormatScript = () => {
       return;
     }
 
-    execSync("npm run format", { stdio: "pipe", encoding: "utf8" });
+    execWithNodeVersion(24, "npm run format");
 
     console.info("- Success: `npm run format` passed with no errors");
   } catch (e) {
