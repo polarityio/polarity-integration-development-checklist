@@ -40,6 +40,10 @@ Checks a list of requirements found in the Polarity Integration Development Chec
   - Skipped if no `test` script is found
   
 
+## Requirements
+
+This action must run on `ubuntu-latest` (do not use a `container` directive such as `rockylinux:8`). This is required for Playwright browser tests which depend on system libraries installed via `apt-get`.
+
 ## Inputs
 
 ### `GITHUB_TOKEN`
