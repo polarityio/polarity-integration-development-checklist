@@ -9,6 +9,9 @@ const checkGitignoreFile = require("./checkGitignoreFile");
 const checkPackageJsonFile = require("./checkPackageJsonFile");
 const checkPackageLockFile = require("./checkPackageLockFile");
 const checkTargetBranch = require("./checkTargetBranch");
+const checkLintScript = require("./checkLintScript");
+const checkFormatScript = require("./checkFormatScript");
+const checkTestScript = require("./checkTestScript");
 
 const main = async () => {
   try {
@@ -32,6 +35,12 @@ const main = async () => {
     await checkPackageJsonFile(octokit, repo);
 
     checkPackageLockFile();
+
+    checkLintScript();
+
+    checkFormatScript();
+
+    checkTestScript();
 
     console.info("\n\nIntegration Development Checklist Passed!\n");
   } catch (error) {
