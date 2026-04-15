@@ -33,7 +33,7 @@ const installDependencies = () => {
 
   if (hasPlaywrightDependency()) {
     try {
-      execWithNodeVersion(18, "npx playwright install --with-deps chromium");
+      execWithNodeVersion(18, "npx playwright install chromium");
       console.info("- Success: Playwright browsers installed");
     } catch (e) {
       if (e.stdout || e.stderr) {
