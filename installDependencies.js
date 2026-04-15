@@ -8,7 +8,7 @@ const hasPlaywrightDependency = () => {
       ...packageJson.dependencies,
       ...packageJson.devDependencies
     };
-    return Object.keys(allDeps).some((dep) => dep.includes("playwright"));
+    return "@vitest/browser-playwright" in allDeps || "@vitest/browser" in allDeps;
   } catch {
     return false;
   }
