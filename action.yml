@@ -8,5 +8,5 @@ branding:
   icon: "triangle"
   color: "green"
 runs:
-  using: "node20"
+  using: "node24"
   main: "index.js"
