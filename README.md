@@ -26,6 +26,18 @@ Checks a list of requirements found in the Polarity Integration Development Chec
 - package-lock.json File Checks 
   - Verifying the package-lock.json file exists
   - Verifying the package-lock.json file `version` property matches the `version` property found in the package.json file
+- Dependency Installation
+  - Runs `npm ci` using Node 18 to install dependencies
+  - If `@vitest/browser-playwright` or `@vitest/browser` is found in `dependencies` or `devDependencies`, automatically installs Chromium via `npx playwright install chromium`
+- Lint Script Check
+  - If a `lint` script is defined in package.json, runs `npm run lint` using Node 24
+  - Skipped if no `lint` script is found
+- Format Script Check
+  - If a `format` script is defined in package.json, runs `npm run format` using Node 24
+  - Skipped if no `format` script is found
+- Test Script Check
+  - If a `test` script is defined in package.json, runs `npm run test` using Node 24
+  - Skipped if no `test` script is found
   
 
 ## Inputs
