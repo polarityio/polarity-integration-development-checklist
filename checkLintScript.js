@@ -1,6 +1,6 @@
 const fs = require("fs");
-const { execSync } = require("child_process");
 const fp = require("lodash/fp");
+const execWithNodeVersion = require("./execWithNodeVersion");
 
 const checkLintScript = () => {
   try {
@@ -12,7 +12,7 @@ const checkLintScript = () => {
       return;
     }
 
-    execSync("npm run lint", { stdio: "pipe", encoding: "utf8" });
+    execWithNodeVersion(18, "npm run lint");
 
     console.info("- Success: `npm run lint` passed with no errors");
   } catch (e) {

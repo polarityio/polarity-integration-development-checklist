@@ -12,6 +12,7 @@ const checkTargetBranch = require("./checkTargetBranch");
 const checkLintScript = require("./checkLintScript");
 const checkFormatScript = require("./checkFormatScript");
 const checkTestScript = require("./checkTestScript");
+const installDependencies = require("./installDependencies");
 
 const main = async () => {
   try {
@@ -35,6 +36,8 @@ const main = async () => {
     await checkPackageJsonFile(octokit, repo);
 
     checkPackageLockFile();
+
+    installDependencies();
 
     checkLintScript();
 
