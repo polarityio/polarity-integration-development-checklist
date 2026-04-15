@@ -12,6 +12,7 @@ const checkTargetBranch = require("./checkTargetBranch");
 const checkLintScript = require("./checkLintScript");
 const checkFormatScript = require("./checkFormatScript");
 const checkTestScript = require("./checkTestScript");
+const checkBuildScript = require("./checkBuildScript");
 const installDependencies = require("./installDependencies");
 
 const main = async () => {
@@ -38,6 +39,8 @@ const main = async () => {
     checkPackageLockFile();
 
     installDependencies();
+
+    checkBuildScript();
 
     checkLintScript();
 

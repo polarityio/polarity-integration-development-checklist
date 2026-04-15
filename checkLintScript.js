@@ -12,9 +12,9 @@ const checkLintScript = () => {
       return;
     }
 
-    execWithNodeVersion(18, "npm run lint");
+    execWithNodeVersion(24, "npm run lint");
 
-    console.info("- Success: `npm run lint` passed with no errors");
+    console.info("- Success: `npm run lint` passed with no errors (Node 24)");
   } catch (e) {
     if (e.message.includes("no such file or directory")) {
       throw new Error("File Not Found: package.json");
