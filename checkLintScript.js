@@ -12,7 +12,7 @@ const checkLintScript = () => {
       return;
     }
 
-    execWithNodeVersion(24, "npm run lint");
+    execWithNodeVersion(18, "npm run lint");
 
     console.info("- Success: `npm run lint` passed with no errors");
   } catch (e) {

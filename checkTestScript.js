@@ -12,7 +12,7 @@ const checkTestScript = () => {
       return;
     }
 
-    execWithNodeVersion(24, "npm run test");
+    execWithNodeVersion(18, "npm run test");
 
     console.info("- Success: `npm run test` passed with no errors");
   } catch (e) {
