@@ -21,8 +21,8 @@ const installDependencies = () => {
   }
 
   try {
-    execWithNodeVersion(18, "npm ci");
-    console.info("- Success: Dependencies installed with Node 18 via `npm ci`");
+    execWithNodeVersion(24, "npm ci");
+    console.info("- Success: Dependencies installed with Node 24 via `npm ci`");
   } catch (e) {
     if (e.stdout || e.stderr) {
       const output = (e.stdout || "") + (e.stderr || "");
@@ -33,7 +33,7 @@ const installDependencies = () => {
 
   if (hasPlaywrightDependency()) {
     try {
-      execWithNodeVersion(18, "npx playwright install --with-deps chromium");
+      execWithNodeVersion(24, "npx playwright install --with-deps chromium");
       console.info("- Success: Playwright browsers installed");
     } catch (e) {
       if (e.stdout || e.stderr) {
